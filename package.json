@@ -1,6 +1,6 @@
 {
   "name": "@gnosis.pm/safe-modules-deployments",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Collection of Safe Modules singleton deployments",
   "homepage": "https://github.com/gnosis/safe-modules-deployments/",
   "license": "MIT",
