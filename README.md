@@ -1,17 +1,17 @@
-# Gnosis Safe Modules Deployments
+# Safe Modules Deployments
 
-[![npm version](https://badge.fury.io/js/%40gnosis.pm%2Fsafe-modules-deployments.svg)](https://badge.fury.io/js/%40gnosis.pm%2Fsafe-modules-deployments)
+[![npm version](https://badge.fury.io/js/%40safe-global%2Fsafe-modules-deployments.svg)](https://badge.fury.io/js/%40safe-global%2Fsafe-modules-deployments)
 
-This contract contains a collection of deployments of audited contracts from the [Safe modules repository](https://github.com/gnosis/safe-modules).
+This contract contains a collection of deployments of audited contracts from the [Safe modules repository](https://github.com/safe-global/safe-modules).
 
 For each deployment the address on the different networks and the abi files are available. To get an overview of the available versions check the available [json assets](./src/assets/).
 
-To add additional deployments please follow the [deployment steps in the module folder in the Safe modules repository](https://github.com/gnosis/safe-modules).
+To add additional deployments please follow the [deployment steps in the module folder in the Safe modules repository](https://github.com/safe-global/safe-modules).
 
 ## Install
 
-- npm - `npm i @gnosis.pm/safe-modules-deployments`
-- yarn - `yarn add @gnosis.pm/safe-modules-deployments`
+- npm - `npm i @safe-global/safe-modules-deployments`
+- yarn - `yarn add @safe-global/safe-modules-deployments`
 
 ## Usage
 

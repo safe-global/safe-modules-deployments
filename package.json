@@ -1,8 +1,8 @@
 {
-  "name": "@gnosis.pm/safe-modules-deployments",
+  "name": "@safe-global/safe-modules-deployments",
   "version": "1.1.0",
   "description": "Collection of Safe Modules singleton deployments",
-  "homepage": "https://github.com/gnosis/safe-modules-deployments/",
+  "homepage": "https://github.com/safe-global/safe-modules-deployments/",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -19,16 +19,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gnosis/safe-modules-deployments.git"
+    "url": "git+https://github.com/safe-global/safe-modules-deployments.git"
   },
   "keywords": [
     "Ethereum",
     "Wallet",
     "Safe"
   ],
-  "author": "mikhail@gnosis.io",
+  "author": "mikhail@safe.global",
   "bugs": {
-    "url": "https://github.com/gnosis/safe-modules-deployments/issues"
+    "url": "https://github.com/safe-global/safe-modules-deployments/issues"
   },
   "devDependencies": {
     "@types/node": "^14.14.21",
