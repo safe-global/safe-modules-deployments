@@ -1,4 +1,4 @@
-export interface SingletonDeployment {
+export interface Deployment {
   version: string;
   abi: any[];
   networkAddresses: Record<string, string>;

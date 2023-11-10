@@ -29,10 +29,10 @@ interface DeploymentFilter {
 }
 ```
 
-The method will return a `SingletonDeployment` object or `undefined` if no deployment was found for the specified filter.
+The method will return a `Deployment` object or `undefined` if no deployment was found for the specified filter.
 
 ```ts
-interface SingletonDeployment {
+interface Deployment {
   version: string;
   abi: any[];
   networkAddresses: Record<string, string>; // Address of the contract by network
@@ -42,19 +42,19 @@ interface SingletonDeployment {
 ```
 
 - Allowance Module
+  ```ts
+  const allowanceModule = getAllowanceModuleDeployment();
 
-```ts
-const allowanceModule = getAllowanceModuleDeployment();
+  // Returns latest contract version, even if not finally released yet
+  const allowanceModuleNightly = getAllowanceModuleDeployment({ released: undefined });
 
-// Returns latest contract version, even if not finally released yet
-const allowanceModuleNightly = getAllowanceModuleDeployment({ released: undefined });
+  // Returns released contract version for specific network
+  const allowanceModuleGörli = getAllowanceModuleDeployment({ network: '5' });
 
-// Returns released contract version for specific network
-const allowanceModuleGörli = getAllowanceModuleDeployment({ network: '5' });
-
-// Returns released contract version for specific version
-const allowanceModule010 = getAllowanceModuleDeployment({ version: '0.1.0' });
-```
+  // Returns released contract version for specific version
+  const allowanceModule010 = getAllowanceModuleDeployment({ version: '0.1.0' });
+  ```
+- ERC-4337 Module
 
 ## Notes
 

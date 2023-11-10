@@ -1,9 +1,6 @@
-import { DeploymentFilter, SingletonDeployment } from './types';
+import { DeploymentFilter, Deployment } from './types';
 
-export const findDeployment = (
-  criteria: DeploymentFilter,
-  deployments: SingletonDeployment[],
-): SingletonDeployment | undefined =>
+export const findDeployment = (criteria: DeploymentFilter, deployments: Deployment[]): Deployment | undefined =>
   deployments.find((deployment) => {
     if (criteria.version && deployment.version !== criteria.version) return false;
     if (criteria.released && deployment.released != criteria.released) return false;
