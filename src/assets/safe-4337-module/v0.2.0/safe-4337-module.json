@@ -1,7 +1,7 @@
 {
   "released": true,
   "contractName": "Safe4337Module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "networkAddresses": {
     "5": "0xa581c4A4DB7175302464fF3C06380BC3270b4037",
     "137": "0xa581c4A4DB7175302464fF3C06380BC3270b4037",

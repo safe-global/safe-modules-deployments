@@ -1,7 +1,7 @@
 {
   "released": true,
   "contractName": "AddModulesLib",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "networkAddresses": {
     "5": "0x8EcD4ec46D4D2a6B64fE960B3D64e8B94B2234eb",
     "137": "0x8EcD4ec46D4D2a6B64fE960B3D64e8B94B2234eb",
