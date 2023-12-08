@@ -3,10 +3,10 @@
   "contractName": "Safe4337Module",
   "version": "0.1.0",
   "networkAddresses": {
-    "5": "0x39E54Bb2b3Aa444b4B39DEe15De3b7809c36Fc38",
-    "137": "0x39E54Bb2b3Aa444b4B39DEe15De3b7809c36Fc38",
-    "80001": "0x39E54Bb2b3Aa444b4B39DEe15De3b7809c36Fc38",
-    "11155111": "0x39E54Bb2b3Aa444b4B39DEe15De3b7809c36Fc38"
+    "5": "0xa581c4A4DB7175302464fF3C06380BC3270b4037",
+    "137": "0xa581c4A4DB7175302464fF3C06380BC3270b4037",
+    "80001": "0xa581c4A4DB7175302464fF3C06380BC3270b4037",
+    "11155111": "0xa581c4A4DB7175302464fF3C06380BC3270b4037"
   },
   "abi": [
     {
@@ -185,56 +185,73 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "safe",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes",
-          "name": "callData",
-          "type": "bytes"
-        },
-        {
-          "internalType": "uint256",
-          "name": "nonce",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "preVerificationGas",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "verificationGasLimit",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "callGasLimit",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxFeePerGas",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxPriorityFeePerGas",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "entryPoint",
-          "type": "address"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initCode",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "callData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "callGasLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "verificationGasLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "preVerificationGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxFeePerGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxPriorityFeePerGas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "paymasterAndData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct UserOperation",
+          "name": "userOp",
+          "type": "tuple"
         }
       ],
       "name": "getOperationHash",
       "outputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "operationHash",
           "type": "bytes32"
         }
       ],
