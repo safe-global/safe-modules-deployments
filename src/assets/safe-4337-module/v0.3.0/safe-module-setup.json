@@ -1,0 +1,23 @@
+{
+  "released": true,
+  "contractName": "SafeModuleSetup",
+  "version": "0.3.0",
+  "networkAddresses": {
+    "11155111": "0x2dd68b007B46fBe91B9A7c3EDa5A7a1063cB5b47"
+  },
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "modules",
+          "type": "address[]"
+        }
+      ],
+      "name": "enableModules",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}
