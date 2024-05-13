@@ -1,6 +1,6 @@
 import Safe4337Module030 from './assets/safe-4337-module/v0.3.0/safe-4337-module.json';
 import Safe4337Module020 from './assets/safe-4337-module/v0.2.0/safe-4337-module.json';
-import SafeModuleSetup030 from './assets/safe-4337-module/v0.3.0/safe-setup-module.json';
+import SafeModuleSetup030 from './assets/safe-4337-module/v0.3.0/safe-module-setup.json';
 import AddModulesLib020 from './assets/safe-4337-module/v0.2.0/add-modules-lib.json';
 import { DeploymentFilter, Deployment } from './types';
 import { applyFilterDefaults, findDeployment } from './utils';
