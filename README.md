@@ -62,6 +62,7 @@ This repository contains deployments for the following modules:
 - Allowance Module
 - ERC-4337 Module
 - Passkeys
+- Social Recovery Module
 
 ## Notes
 
