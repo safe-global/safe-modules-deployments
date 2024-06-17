@@ -1,4 +1,5 @@
 {
+  "defaultAddress": "0x445a0683e494ea0c5AF3E83c5159fBE47Cf9e765",
   "released": true,
   "contractName": "FCLP256Verifier",
   "version": "0.2.0",
