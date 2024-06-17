@@ -1,5 +1,4 @@
 {
-  "defaultAddress": "0xF7488fFbe67327ac9f37D5F722d83Fc900852Fbf",
   "released": true,
   "contractName": "SafeWebAuthnSignerFactory",
   "version": "0.2.0",
