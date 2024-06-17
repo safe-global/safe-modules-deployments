@@ -12,6 +12,7 @@ To add additional deployments please follow the [deployment steps in the module 
 
 - npm - `npm i @safe-global/safe-modules-deployments`
 - yarn - `yarn add @safe-global/safe-modules-deployments`
+- pnpm - `pnpm install @safe-global/safe-modules-deployments`
 
 ## Usage
 
@@ -41,20 +42,26 @@ interface Deployment {
 }
 ```
 
+For example, in order to get various deployments for the Safe Allowance module:
+
+```ts
+const allowanceModule = getAllowanceModuleDeployment();
+
+// Returns latest contract version, even if not finally released yet
+const allowanceModuleNightly = getAllowanceModuleDeployment({ released: undefined });
+
+// Returns released contract version for specific network
+const allowanceModuleGörli = getAllowanceModuleDeployment({ network: '5' });
+
+// Returns released contract version for specific version
+const allowanceModule010 = getAllowanceModuleDeployment({ version: '0.1.0' });
+```
+
+This repository contains deployments for the following modules:
+
 - Allowance Module
-  ```ts
-  const allowanceModule = getAllowanceModuleDeployment();
-
-  // Returns latest contract version, even if not finally released yet
-  const allowanceModuleNightly = getAllowanceModuleDeployment({ released: undefined });
-
-  // Returns released contract version for specific network
-  const allowanceModuleGörli = getAllowanceModuleDeployment({ network: '5' });
-
-  // Returns released contract version for specific version
-  const allowanceModule010 = getAllowanceModuleDeployment({ version: '0.1.0' });
-  ```
 - ERC-4337 Module
+- Passkeys
 
 ## Notes
 
