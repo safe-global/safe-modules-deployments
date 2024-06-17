@@ -1,7 +1,7 @@
 {
   "released": true,
-  "contractName": "FCLP256Verifier",
-  "version": "0.2.0",
+  "contractName": "SocialRecoveryModule",
+  "version": "0.1.0",
   "networkAddresses": {
     "10": "0x4Aa5Bf7D840aC607cb5BD3249e6Af6FC86C04897",
     "11155111": "0x4Aa5Bf7D840aC607cb5BD3249e6Af6FC86C04897",
