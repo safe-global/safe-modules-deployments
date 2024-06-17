@@ -1,4 +1,5 @@
 {
+  "defaultAddress": "0x4Aa5Bf7D840aC607cb5BD3249e6Af6FC86C04897",
   "released": true,
   "contractName": "SocialRecoveryModule",
   "version": "0.1.0",

@@ -1,4 +1,5 @@
 {
+  "defaultAddress": "0x2dd68b007B46fBe91B9A7c3EDa5A7a1063cB5b47",
   "released": true,
   "contractName": "SafeModuleSetup",
   "version": "0.3.0",

@@ -1,10 +1,11 @@
 export interface Deployment {
+  defaultAddress: string;
+  released: boolean;
+  contractName: string;
   version: string;
+  networkAddresses: Record<string, string>;
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   abi: any[];
-  networkAddresses: Record<string, string>;
-  contractName: string;
-  released: boolean;
 }
 
 export interface DeploymentFilter {
