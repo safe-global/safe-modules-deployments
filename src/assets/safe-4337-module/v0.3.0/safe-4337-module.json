@@ -3,7 +3,7 @@
   "contractName": "Safe4337Module",
   "version": "0.3.0",
   "networkAddresses": {
-    "11155111": "0x75cf11467937ce3F2f357CE24ffc3DBF8fD5c226"
+    "131313": "0x35686b57D3E9B6EF98d73867D6834455dF5e862E"
   },
   "abi": [
     {
