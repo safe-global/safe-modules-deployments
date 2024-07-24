@@ -3,6 +3,7 @@
   "contractName": "SafeModuleSetup",
   "version": "0.3.0",
   "networkAddresses": {
+    "480": "0x2dd68b007B46fBe91B9A7c3EDa5A7a1063cB5b47",
     "11155111": "0x2dd68b007B46fBe91B9A7c3EDa5A7a1063cB5b47"
   },
   "abi": [
