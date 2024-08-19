@@ -9,7 +9,10 @@ import { DeploymentFilter, Deployment } from './types';
 import { applyFilterDefaults, findDeployment } from './utils';
 
 // The array should be sorted from the latest version to the oldest.
-const SAFE_WEBAUTHN_SIGNER_FACTORY_DEPLOYMENTS: Deployment[] = [SafeWebAuthnSignerFactory021, SafeWebAuthnSignerFactory020];
+const SAFE_WEBAUTHN_SIGNER_FACTORY_DEPLOYMENTS: Deployment[] = [
+  SafeWebAuthnSignerFactory021,
+  SafeWebAuthnSignerFactory020,
+];
 const SAFE_WEBAUTHN_SHARED_SIGNER_DEPLOYMENTS: Deployment[] = [SafeWebAuthnSharedSigner021];
 const DAIMO_P256_VERIFIER_DEPLOYMENTS: Deployment[] = [DaimoP256Verifier021, DaimoP256Verifier020];
 const FCL_P256_VERIFIER_DEPLOYMENTS: Deployment[] = [FCLP256Verifier021, FCLP256Verifier020];
