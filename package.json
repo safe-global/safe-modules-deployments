@@ -1,6 +1,6 @@
 {
   "name": "@safe-global/safe-modules-deployments",
-  "version": "2.2.20",
+  "version": "2.2.21",
   "description": "Collection of Safe modules contract deployments",
   "homepage": "https://github.com/safe-global/safe-modules-deployments/",
   "license": "MIT",
