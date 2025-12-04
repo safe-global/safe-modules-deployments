@@ -12,8 +12,8 @@
  *   npx tsx scripts/update-registry.ts --chain-id 11155111 --module allowance --version 0.1.1 --address 0xAA46724893dedD72658219405185Fb0Fc91e091C
  */
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Supported modules configuration
 const MODULE_CONFIG: Record<
@@ -26,16 +26,16 @@ const MODULE_CONFIG: Record<
   }
 > = {
   allowance: {
-    dir: "allowance-module",
-    contractName: "AllowanceModule",
-    jsonFile: "allowance-module.json",
-    supportedVersions: ["0.1.1"],
+    dir: 'allowance-module',
+    contractName: 'AllowanceModule',
+    jsonFile: 'allowance-module.json',
+    supportedVersions: ['0.1.1'],
   },
-  "social-recovery": {
-    dir: "safe-recovery-module",
-    contractName: "SocialRecoveryModule",
-    jsonFile: "social-recovery-module.json",
-    supportedVersions: ["0.1.0"],
+  'social-recovery': {
+    dir: 'safe-recovery-module',
+    contractName: 'SocialRecoveryModule',
+    jsonFile: 'social-recovery-module.json',
+    supportedVersions: ['0.1.0'],
   },
 };
 
@@ -49,7 +49,7 @@ interface ModuleDeployment {
 
 interface UpdateResult {
   success: boolean;
-  action: "added" | "updated" | "unchanged";
+  action: 'added' | 'updated' | 'unchanged';
   message: string;
   assetPath?: string;
 }
@@ -66,45 +66,42 @@ function parseArgs(): {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg.startsWith("--")) {
+    if (arg.startsWith('--')) {
       const key = arg.slice(2);
       const value = args[++i];
-      if (value && !value.startsWith("--")) {
+      if (value && !value.startsWith('--')) {
         result[key] = value;
       }
     }
   }
 
   // Support both kebab-case and camelCase
-  const chainId = result["chain-id"] || result["chainId"];
-  const moduleType = result["module"] || result["module-type"] || result["moduleType"];
-  const version = result["version"];
-  const address = result["address"] || result["contract-address"];
-  const contractName = result["contract-name"] || result["contractName"];
+  const chainId = result['chain-id'] || result['chainId'];
+  const moduleType = result['module'] || result['module-type'] || result['moduleType'];
+  const version = result['version'];
+  const address = result['address'] || result['contract-address'];
+  const contractName = result['contract-name'] || result['contractName'];
 
   if (!chainId || !moduleType || !version || !address) {
-    console.error("Usage: npx tsx scripts/update-registry.ts --chain-id <chainId> --module <type> --version <version> --address <address>");
-    console.error("");
-    console.error("Required arguments:");
-    console.error("  --chain-id      Chain ID (e.g., 11155111)");
-    console.error("  --module        Module type: allowance, social-recovery");
-    console.error("  --version       Module version (e.g., 0.1.1)");
-    console.error("  --address       Deployed contract address (0x...)");
-    console.error("");
-    console.error("Optional arguments:");
-    console.error("  --contract-name Contract name override");
+    console.error(
+      'Usage: npx tsx scripts/update-registry.ts --chain-id <chainId> --module <type> --version <version> --address <address>',
+    );
+    console.error('');
+    console.error('Required arguments:');
+    console.error('  --chain-id      Chain ID (e.g., 11155111)');
+    console.error('  --module        Module type: allowance, social-recovery');
+    console.error('  --version       Module version (e.g., 0.1.1)');
+    console.error('  --address       Deployed contract address (0x...)');
+    console.error('');
+    console.error('Optional arguments:');
+    console.error('  --contract-name Contract name override');
     process.exit(1);
   }
 
   return { chainId, moduleType, version, address, contractName };
 }
 
-function validateInputs(
-  chainId: string,
-  moduleType: string,
-  version: string,
-  address: string
-): void {
+function validateInputs(chainId: string, moduleType: string, version: string, address: string): void {
   // Validate chain ID is a number
   if (!/^\d+$/.test(chainId)) {
     throw new Error(`Invalid chain_id: "${chainId}" must be a number`);
@@ -113,23 +110,21 @@ function validateInputs(
   // Validate contract address format
   if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
     throw new Error(
-      `Invalid contract_address: "${address}" must be a valid Ethereum address (0x followed by 40 hex characters)`
+      `Invalid contract_address: "${address}" must be a valid Ethereum address (0x followed by 40 hex characters)`,
     );
   }
 
   // Validate module type
   const config = MODULE_CONFIG[moduleType];
   if (!config) {
-    const validModules = Object.keys(MODULE_CONFIG).join(", ");
-    throw new Error(
-      `Unknown module_type: "${moduleType}". Valid options: ${validModules}`
-    );
+    const validModules = Object.keys(MODULE_CONFIG).join(', ');
+    throw new Error(`Unknown module_type: "${moduleType}". Valid options: ${validModules}`);
   }
 
   // Validate version for the module
   if (!config.supportedVersions.includes(version)) {
     throw new Error(
-      `Invalid version "${version}" for module "${moduleType}". Supported versions: ${config.supportedVersions.join(", ")}`
+      `Invalid version "${version}" for module "${moduleType}". Supported versions: ${config.supportedVersions.join(', ')}`,
     );
   }
 }
@@ -140,15 +135,7 @@ function getAssetPath(moduleType: string, version: string): string {
     throw new Error(`Unknown module type: ${moduleType}`);
   }
 
-  const assetPath = path.join(
-    __dirname,
-    "..",
-    "src",
-    "assets",
-    config.dir,
-    `v${version}`,
-    config.jsonFile
-  );
+  const assetPath = path.join(__dirname, '..', 'src', 'assets', config.dir, `v${version}`, config.jsonFile);
 
   return assetPath;
 }
@@ -158,7 +145,7 @@ function updateRegistry(
   moduleType: string,
   version: string,
   address: string,
-  contractName?: string
+  contractName?: string,
 ): UpdateResult {
   // Validate inputs
   validateInputs(chainId, moduleType, version, address);
@@ -169,12 +156,12 @@ function updateRegistry(
   // Check if asset file exists
   if (!fs.existsSync(assetPath)) {
     throw new Error(
-      `Asset file not found: ${assetPath}. Please ensure version ${version} exists for module ${moduleType}`
+      `Asset file not found: ${assetPath}. Please ensure version ${version} exists for module ${moduleType}`,
     );
   }
 
   // Read current JSON
-  const content = fs.readFileSync(assetPath, "utf-8");
+  const content = fs.readFileSync(assetPath, 'utf-8');
   const data: ModuleDeployment = JSON.parse(content);
 
   // Normalize address to checksum format (lowercase for consistency with existing entries)
@@ -184,7 +171,7 @@ function updateRegistry(
   if (data.networkAddresses[chainId] === normalizedAddress) {
     return {
       success: true,
-      action: "unchanged",
+      action: 'unchanged',
       message: `Chain ID ${chainId} already has the same address. No update needed.`,
       assetPath,
     };
@@ -205,15 +192,15 @@ function updateRegistry(
   data.networkAddresses = sortedAddresses;
 
   // Write back to file
-  fs.writeFileSync(assetPath, JSON.stringify(data, null, 2) + "\n");
+  fs.writeFileSync(assetPath, JSON.stringify(data, null, 2) + '\n');
 
-  const action = isNew ? "added" : "updated";
+  const action = isNew ? 'added' : 'updated';
   const finalContractName = contractName || config.contractName;
 
   return {
     success: true,
     action,
-    message: `${action === "added" ? "Added" : "Updated"} chain ID ${chainId} with address ${normalizedAddress} for ${finalContractName}`,
+    message: `${action === 'added' ? 'Added' : 'Updated'} chain ID ${chainId} with address ${normalizedAddress} for ${finalContractName}`,
     assetPath,
   };
 }
@@ -223,7 +210,7 @@ function main(): void {
   try {
     const { chainId, moduleType, version, address, contractName } = parseArgs();
 
-    console.log("🔄 Updating module registry...");
+    console.log('🔄 Updating module registry...');
     console.log(`   Chain ID: ${chainId}`);
     console.log(`   Module: ${moduleType}`);
     console.log(`   Version: ${version}`);
@@ -231,12 +218,12 @@ function main(): void {
     if (contractName) {
       console.log(`   Contract Name: ${contractName}`);
     }
-    console.log("");
+    console.log('');
 
     const result = updateRegistry(chainId, moduleType, version, address, contractName);
 
     if (result.success) {
-      const icon = result.action === "unchanged" ? "ℹ️" : "✅";
+      const icon = result.action === 'unchanged' ? 'ℹ️' : '✅';
       console.log(`${icon} ${result.message}`);
       console.log(`   Asset: ${result.assetPath}`);
 
@@ -244,28 +231,28 @@ function main(): void {
       if (process.env.GITHUB_OUTPUT) {
         const output = [
           `action=${result.action}`,
-          `has_changes=${result.action !== "unchanged"}`,
+          `has_changes=${result.action !== 'unchanged'}`,
           `asset_path=${result.assetPath}`,
           `message=${result.message}`,
-        ].join("\n");
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, output + "\n");
+        ].join('\n');
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, output + '\n');
       }
 
       // Output for GitHub Actions step summary
       if (process.env.GITHUB_STEP_SUMMARY) {
         const summary = [
-          "## 📦 Module Registry Update",
-          "",
-          "| Property | Value |",
-          "|----------|-------|",
+          '## 📦 Module Registry Update',
+          '',
+          '| Property | Value |',
+          '|----------|-------|',
           `| **Chain ID** | ${chainId} |`,
           `| **Module** | ${moduleType} |`,
           `| **Version** | ${version} |`,
           `| **Address** | \`${address}\` |`,
           `| **Action** | ${result.action} |`,
-          "",
-        ].join("\n");
-        fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary + "\n");
+          '',
+        ].join('\n');
+        fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary + '\n');
       }
     }
   } catch (error) {
@@ -282,4 +269,3 @@ function main(): void {
 }
 
 main();
-
