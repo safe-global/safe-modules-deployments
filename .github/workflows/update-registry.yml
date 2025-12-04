@@ -1,0 +1,162 @@
+name: Update Modules Registry
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain_id:
+        description: 'Chain ID where modules were deployed'
+        required: true
+        type: string
+      module_type:
+        description: 'Module type'
+        required: true
+        type: choice
+        options:
+          - allowance
+          - social-recovery
+      version:
+        description: 'Module version (allowance: 0.1.1, social-recovery: 0.1.0)'
+        required: true
+        type: choice
+        options:
+          - '0.1.0'
+          - '0.1.1'
+      contract_address:
+        description: 'Deployed contract address (0x...)'
+        required: true
+        type: string
+      contract_name:
+        description: 'Contract name (optional, auto-detected from module type)'
+        required: false
+        type: string
+
+# Prevent concurrent runs that could cause conflicts
+concurrency:
+  group: update-registry-${{ github.event.inputs.chain_id }}
+  cancel-in-progress: false
+
+jobs:
+  update-registry:
+    name: Update Module Registry
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Update registry
+        id: update
+        run: |
+          pnpm update-registry \
+            --chain-id "${{ github.event.inputs.chain_id }}" \
+            --module "${{ github.event.inputs.module_type }}" \
+            --version "${{ github.event.inputs.version }}" \
+            --address "${{ github.event.inputs.contract_address }}" \
+            ${{ github.event.inputs.contract_name && format('--contract-name "{0}"', github.event.inputs.contract_name) || '' }}
+
+      - name: Create Pull Request
+        if: steps.update.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CHAIN_ID="${{ github.event.inputs.chain_id }}"
+          MODULE_TYPE="${{ github.event.inputs.module_type }}"
+          VERSION="${{ github.event.inputs.version }}"
+          CONTRACT_ADDRESS="${{ github.event.inputs.contract_address }}"
+          ASSET_PATH="${{ steps.update.outputs.asset_path }}"
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create branch name
+          BRANCH_NAME="add-chain-${CHAIN_ID}-${MODULE_TYPE}-v${VERSION}"
+          
+          # Check if branch already exists (locally or remotely)
+          if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME" 2>/dev/null || \
+             git ls-remote --exit-code --heads origin "$BRANCH_NAME" 2>/dev/null; then
+            # Generate unique branch name
+            BRANCH_NAME="${BRANCH_NAME}-$(date +%s)"
+          fi
+          
+          git checkout -b "$BRANCH_NAME"
+          
+          # Commit changes
+          git add "$ASSET_PATH"
+          git commit -m "feat: add chain $CHAIN_ID to $MODULE_TYPE module v$VERSION
+          
+          - Chain ID: $CHAIN_ID
+          - Module: $MODULE_TYPE
+          - Version: $VERSION  
+          - Address: $CONTRACT_ADDRESS
+          
+          Automated update from deployment-scripts workflow."
+          
+          # Push branch
+          git push origin "$BRANCH_NAME"
+          
+          # Create PR
+          PR_TITLE="feat: Add chain $CHAIN_ID to $MODULE_TYPE module v$VERSION"
+          PR_BODY="## Module Registry Update
+
+          This PR adds a new chain deployment to the Safe Modules registry.
+
+          ### Deployment Details
+
+          | Property | Value |
+          |----------|-------|
+          | **Chain ID** | \`$CHAIN_ID\` |
+          | **Module** | $MODULE_TYPE |
+          | **Version** | $VERSION |
+          | **Address** | \`$CONTRACT_ADDRESS\` |
+
+          ### Modified Files
+
+          - \`$ASSET_PATH\`
+
+          ---
+
+          > 🤖 This PR was automatically created by the deployment-scripts workflow."
+          
+          gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --label "automated" || echo "::warning::Failed to create PR, it may already exist"
+          
+          echo "::notice::Created PR for chain $CHAIN_ID"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 📦 Module Registry Update Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.update.outputs.has_changes }}" == "true" ]; then
+            echo "✅ **Changes detected** - PR created to add this deployment to the registry." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.update.outputs.action }}" == "unchanged" ]; then
+            echo "ℹ️ **No changes needed** - chain already registered with same address." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Update completed** - check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
