@@ -114,6 +114,11 @@ function validateInputs(chainId: string, moduleType: string, version: string, ad
     );
   }
 
+  // Prevent path traversal in version parameter (check before using in path construction)
+  if (version.includes('..') || version.includes('/') || version.includes('\\')) {
+    throw new Error(`Invalid version: "${version}" contains illegal path characters`);
+  }
+
   // Validate module type
   const config = MODULE_CONFIG[moduleType];
   if (!config) {
@@ -121,7 +126,7 @@ function validateInputs(chainId: string, moduleType: string, version: string, ad
     throw new Error(`Unknown module_type: "${moduleType}". Valid options: ${validModules}`);
   }
 
-  // Validate version for the module
+  // Validate version against whitelist (implicitly validates format as well)
   if (!config.supportedVersions.includes(version)) {
     throw new Error(
       `Invalid version "${version}" for module "${moduleType}". Supported versions: ${config.supportedVersions.join(', ')}`,
