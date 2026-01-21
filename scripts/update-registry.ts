@@ -6,10 +6,10 @@
  * It can be run from the command line or called from GitHub Actions.
  *
  * Usage:
- *   npx tsx scripts/update-registry.ts --chain-id <chainId> --module <type> --version <version> --address <address>
+ *   pnpm update-registry --chain-id <chainId> --module <type> --version <version> --address <address>
  *
  * Example:
- *   npx tsx scripts/update-registry.ts --chain-id 11155111 --module allowance --version 0.1.1 --address 0xAA46724893dedD72658219405185Fb0Fc91e091C
+ *   pnpm update-registry --chain-id 11155111 --module allowance --version 0.1.1 --address 0xAA46724893dedD72658219405185Fb0Fc91e091C
  */
 
 import * as fs from 'fs';
@@ -84,7 +84,7 @@ function parseArgs(): {
 
   if (!chainId || !moduleType || !version || !address) {
     console.error(
-      'Usage: npx tsx scripts/update-registry.ts --chain-id <chainId> --module <type> --version <version> --address <address>',
+      'Usage: pnpm update-registry --chain-id <chainId> --module <type> --version <version> --address <address>',
     );
     console.error('');
     console.error('Required arguments:');
