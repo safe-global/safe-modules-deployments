@@ -92,25 +92,30 @@ jobs:
 
       - name: Update registry
         id: update
+        env:
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
+          CONTRACT_NAME: ${{ github.event.inputs.contract_name }}
         run: |
           pnpm update-registry \
-            --chain-id "${{ github.event.inputs.chain_id }}" \
-            --module "${{ github.event.inputs.module_type }}" \
-            --version "${{ github.event.inputs.version }}" \
-            --address "${{ github.event.inputs.contract_address }}" \
-            ${{ github.event.inputs.contract_name && format('--contract-name "{0}"', github.event.inputs.contract_name) || '' }}
+            --chain-id "${CHAIN_ID}" \
+            --module "${MODULE_TYPE}" \
+            --version "${VERSION}" \
+            --address "${CONTRACT_ADDRESS}" \
+            ${CONTRACT_NAME:+--contract-name "${CONTRACT_NAME}"}
 
       - name: Create Pull Request
         if: steps.update.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
+          ASSET_PATH: ${{ steps.update.outputs.asset_path }}
         run: |
-          CHAIN_ID="${{ github.event.inputs.chain_id }}"
-          MODULE_TYPE="${{ github.event.inputs.module_type }}"
-          VERSION="${{ github.event.inputs.version }}"
-          CONTRACT_ADDRESS="${{ github.event.inputs.contract_address }}"
-          ASSET_PATH="${{ steps.update.outputs.asset_path }}"
-          
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
