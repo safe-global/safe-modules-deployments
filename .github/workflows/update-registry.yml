@@ -25,10 +25,6 @@ on:
         description: 'Deployed contract address (0x...)'
         required: true
         type: string
-      contract_name:
-        description: 'Contract name (optional, auto-detected from module type)'
-        required: false
-        type: string
 
 # Prevent concurrent runs that could cause conflicts
 concurrency:
@@ -83,12 +79,6 @@ jobs:
             echo "::error::Invalid version format: must be in X.Y.Z format"
             exit 1
           fi
-          
-          # Validate contract_name contains only safe characters (if provided)
-          if [[ -n "${{ github.event.inputs.contract_name }}" ]] && ! [[ "${{ github.event.inputs.contract_name }}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-            echo "::error::Invalid contract_name format: must contain only alphanumeric characters, hyphens, and underscores"
-            exit 1
-          fi
 
       - name: Update registry
         id: update
@@ -97,14 +87,12 @@ jobs:
           MODULE_TYPE: ${{ github.event.inputs.module_type }}
           VERSION: ${{ github.event.inputs.version }}
           CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
-          CONTRACT_NAME: ${{ github.event.inputs.contract_name }}
         run: |
           pnpm update-registry \
             --chain-id "${CHAIN_ID}" \
             --module "${MODULE_TYPE}" \
             --version "${VERSION}" \
-            --address "${CONTRACT_ADDRESS}" \
-            ${CONTRACT_NAME:+--contract-name "${CONTRACT_NAME}"}
+            --address "${CONTRACT_ADDRESS}"
 
       - name: Create Pull Request
         if: steps.update.outputs.has_changes == 'true'

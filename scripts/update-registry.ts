@@ -60,7 +60,6 @@ function parseArgs(): {
   moduleType: string;
   version: string;
   address: string;
-  contractName?: string;
 } {
   const args = process.argv.slice(2);
   const result: Record<string, string> = {};
@@ -81,7 +80,6 @@ function parseArgs(): {
   const moduleType = result['module'] || result['module-type'] || result['moduleType'];
   const version = result['version'];
   const address = result['address'] || result['contract-address'];
-  const contractName = result['contract-name'] || result['contractName'];
 
   if (!chainId || !moduleType || !version || !address) {
     console.error(
@@ -93,13 +91,10 @@ function parseArgs(): {
     console.error('  --module        Module type: allowance, social-recovery');
     console.error('  --version       Module version (e.g., 0.1.1)');
     console.error('  --address       Deployed contract address (0x...)');
-    console.error('');
-    console.error('Optional arguments:');
-    console.error('  --contract-name Contract name override');
     process.exit(1);
   }
 
-  return { chainId, moduleType, version, address, contractName };
+  return { chainId, moduleType, version, address };
 }
 
 function validateInputs(chainId: string, moduleType: string, version: string, address: string): void {
@@ -146,13 +141,7 @@ function getAssetPath(moduleType: string, version: string): string {
   return assetPath;
 }
 
-function updateRegistry(
-  chainId: string,
-  moduleType: string,
-  version: string,
-  address: string,
-  contractName?: string,
-): UpdateResult {
+function updateRegistry(chainId: string, moduleType: string, version: string, address: string): UpdateResult {
   // Validate inputs
   validateInputs(chainId, moduleType, version, address);
 
@@ -201,12 +190,11 @@ function updateRegistry(
   fs.writeFileSync(assetPath, JSON.stringify(data, null, 2) + '\n');
 
   const action = isNew ? 'added' : 'updated';
-  const finalContractName = contractName || config.contractName;
 
   return {
     success: true,
     action,
-    message: `${action === 'added' ? 'Added' : 'Updated'} chain ID ${chainId} with address ${normalizedAddress} for ${finalContractName}`,
+    message: `${action === 'added' ? 'Added' : 'Updated'} chain ID ${chainId} with address ${normalizedAddress} for ${config.contractName}`,
     assetPath,
   };
 }
@@ -214,19 +202,16 @@ function updateRegistry(
 // Main execution
 function main(): void {
   try {
-    const { chainId, moduleType, version, address, contractName } = parseArgs();
+    const { chainId, moduleType, version, address } = parseArgs();
 
     console.log('🔄 Updating module registry...');
     console.log(`   Chain ID: ${chainId}`);
     console.log(`   Module: ${moduleType}`);
     console.log(`   Version: ${version}`);
     console.log(`   Address: ${address}`);
-    if (contractName) {
-      console.log(`   Contract Name: ${contractName}`);
-    }
     console.log('');
 
-    const result = updateRegistry(chainId, moduleType, version, address, contractName);
+    const result = updateRegistry(chainId, moduleType, version, address);
 
     if (result.success) {
       const icon = result.action === 'unchanged' ? 'ℹ️' : '✅';
