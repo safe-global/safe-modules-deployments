@@ -39,6 +39,7 @@
     "rimraf": "^5.0.7",
     "tsx": "^4.7.0",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.13.0"
+    "typescript-eslint": "^7.13.0",
+    "viem": "^2.44.0"
   }
 }

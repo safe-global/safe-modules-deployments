@@ -14,6 +14,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { getAddress } from 'viem';
 
 // Supported modules configuration
 const MODULE_CONFIG: Record<
@@ -169,8 +170,8 @@ function updateRegistry(
   const content = fs.readFileSync(assetPath, 'utf-8');
   const data: ModuleDeployment = JSON.parse(content);
 
-  // Normalize address to checksum format (lowercase for consistency with existing entries)
-  const normalizedAddress = address;
+  // Normalize address to EIP-55 checksum format
+  const normalizedAddress = getAddress(address);
 
   // Check if already exists with same address
   if (data.networkAddresses[chainId] === normalizedAddress) {
