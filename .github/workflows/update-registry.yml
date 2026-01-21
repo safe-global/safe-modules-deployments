@@ -64,6 +64,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate inputs
+        run: |
+          # Validate chain_id is numeric only
+          if ! [[ "${{ github.event.inputs.chain_id }}" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid chain_id format: must contain only digits"
+            exit 1
+          fi
+          
+          # Validate address format (0x + 40 hex characters)
+          if ! [[ "${{ github.event.inputs.contract_address }}" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+            echo "::error::Invalid contract_address format: must be 0x followed by 40 hexadecimal characters"
+            exit 1
+          fi
+          
+          # Validate version format (X.Y.Z)
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format: must be in X.Y.Z format"
+            exit 1
+          fi
+          
+          # Validate contract_name contains only safe characters (if provided)
+          if [[ -n "${{ github.event.inputs.contract_name }}" ]] && ! [[ "${{ github.event.inputs.contract_name }}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "::error::Invalid contract_name format: must contain only alphanumeric characters, hyphens, and underscores"
+            exit 1
+          fi
+
       - name: Update registry
         id: update
         run: |
