@@ -120,16 +120,32 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Create branch name
-          BRANCH_NAME="add-chain-${CHAIN_ID}-${MODULE_TYPE}-v${VERSION}"
+          # Create branch name pattern for searching
+          BASE_BRANCH_NAME="add-chain-${CHAIN_ID}-${MODULE_TYPE}-v${VERSION}"
           
-          # Check if branch already exists (locally or remotely)
-          if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME" 2>/dev/null || \
-             git ls-remote --exit-code --heads origin "$BRANCH_NAME" 2>/dev/null; then
-            # Generate unique branch name
-            BRANCH_NAME="${BRANCH_NAME}-$(date +%s)"
+          # Check if there's already an open PR for this chain/module/version combination
+          EXISTING_BRANCHES=$(git ls-remote --heads origin "refs/heads/${BASE_BRANCH_NAME}*" | awk '{print $2}' | sed 's|refs/heads/||')
+          
+          if [ -n "$EXISTING_BRANCHES" ]; then
+            echo "Found existing branch(es) for this chain/module/version combination."
+            
+            # Check each branch for open PRs
+            for branch in $EXISTING_BRANCHES; do
+              if gh pr list --head "$branch" --state open --json number,url --jq '.[0].number' 2>/dev/null | grep -q '^[0-9]'; then
+                PR_INFO=$(gh pr list --head "$branch" --state open --json number,url --jq '.[0] | "#\(.number) - \(.url)"')
+                echo "::notice::Open PR already exists for this deployment: $PR_INFO"
+                echo "Skipping as changes are already proposed."
+                exit 0
+              fi
+            done
+            
+            echo "Existing branches found but no open PRs. Proceeding with new branch."
           fi
           
+          # Always use timestamp to prevent race conditions with parallel runs
+          BRANCH_NAME="${BASE_BRANCH_NAME}-$(date +%s)"
+          
+          # Create and switch to new branch
           git checkout -b "$BRANCH_NAME"
           
           # Commit changes
@@ -169,14 +185,17 @@ jobs:
 
           > 🤖 This PR was automatically created by the deployment-scripts workflow."
           
-          gh pr create \
+          # Create PR and capture any errors
+          if ! PR_OUTPUT=$(gh pr create \
             --title "$PR_TITLE" \
             --body "$PR_BODY" \
             --base main \
             --head "$BRANCH_NAME" \
-            --label "automated" || echo "::warning::Failed to create PR, it may already exist"
-          
-          echo "::notice::Created PR for chain $CHAIN_ID"
+            --label "automated" 2>&1); then
+            echo "::error::Failed to create PR: $PR_OUTPUT"
+            exit 1
+          fi
+          echo "::notice::Successfully created PR for chain $CHAIN_ID"
 
       - name: Summary
         if: always()
