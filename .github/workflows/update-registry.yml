@@ -61,21 +61,26 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate inputs
+        env:
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
         run: |
           # Validate chain_id is numeric only
-          if ! [[ "${{ github.event.inputs.chain_id }}" =~ ^[0-9]+$ ]]; then
+          if ! [[ "$CHAIN_ID" =~ ^[0-9]+$ ]]; then
             echo "::error::Invalid chain_id format: must contain only digits"
             exit 1
           fi
           
           # Validate address format (0x + 40 hex characters)
-          if ! [[ "${{ github.event.inputs.contract_address }}" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+          if ! [[ "$CONTRACT_ADDRESS" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
             echo "::error::Invalid contract_address format: must be 0x followed by 40 hexadecimal characters"
             exit 1
           fi
           
           # Validate version format (X.Y.Z)
-          if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid version format: must be in X.Y.Z format"
             exit 1
           fi
