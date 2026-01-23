@@ -1,0 +1,205 @@
+name: Update Modules Registry
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain_id:
+        description: 'Chain ID where modules were deployed'
+        required: true
+        type: string
+      module_type:
+        description: 'Module type'
+        required: true
+        type: choice
+        options:
+          - allowance
+          - social-recovery
+      version:
+        description: 'Module version (allowance: 0.1.1, social-recovery: 0.1.0)'
+        required: true
+        type: choice
+        options:
+          - '0.1.0'
+          - '0.1.1'
+      contract_address:
+        description: 'Deployed contract address (0x...)'
+        required: true
+        type: string
+
+# Prevent concurrent runs that could cause conflicts
+concurrency:
+  group: update-registry-${{ github.event.inputs.chain_id }}
+  cancel-in-progress: false
+
+jobs:
+  update-registry:
+    name: Update Module Registry
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate inputs
+        env:
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
+        run: |
+          # Validate chain_id is numeric only
+          if ! [[ "$CHAIN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid chain_id format: must contain only digits"
+            exit 1
+          fi
+          
+          # Validate address format (0x + 40 hex characters)
+          if ! [[ "$CONTRACT_ADDRESS" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+            echo "::error::Invalid contract_address format: must be 0x followed by 40 hexadecimal characters"
+            exit 1
+          fi
+          
+          # Validate version format (X.Y.Z)
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format: must be in X.Y.Z format"
+            exit 1
+          fi
+
+      - name: Update registry
+        id: update
+        env:
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
+        run: |
+          pnpm update-registry \
+            --chain-id "${CHAIN_ID}" \
+            --module "${MODULE_TYPE}" \
+            --version "${VERSION}" \
+            --address "${CONTRACT_ADDRESS}"
+
+      - name: Create Pull Request
+        if: steps.update.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHAIN_ID: ${{ github.event.inputs.chain_id }}
+          MODULE_TYPE: ${{ github.event.inputs.module_type }}
+          VERSION: ${{ github.event.inputs.version }}
+          CONTRACT_ADDRESS: ${{ github.event.inputs.contract_address }}
+          ASSET_PATH: ${{ steps.update.outputs.asset_path }}
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create branch name pattern for searching
+          BASE_BRANCH_NAME="add-chain-${CHAIN_ID}-${MODULE_TYPE}-v${VERSION}"
+          
+          # Check if there's already an open PR for this chain/module/version combination
+          EXISTING_BRANCHES=$(git ls-remote --heads origin "refs/heads/${BASE_BRANCH_NAME}*" | awk '{print $2}' | sed 's|refs/heads/||')
+          
+          if [ -n "$EXISTING_BRANCHES" ]; then
+            echo "Found existing branch(es) for this chain/module/version combination."
+            
+            # Check each branch for open PRs
+            for branch in $EXISTING_BRANCHES; do
+              if gh pr list --head "$branch" --state open --json number,url --jq '.[0].number' 2>/dev/null | grep -q '^[0-9]'; then
+                PR_INFO=$(gh pr list --head "$branch" --state open --json number,url --jq '.[0] | "#\(.number) - \(.url)"')
+                echo "::notice::Open PR already exists for this deployment: $PR_INFO"
+                echo "Skipping as changes are already proposed."
+                exit 0
+              fi
+            done
+            
+            echo "Existing branches found but no open PRs. Proceeding with new branch."
+          fi
+          
+          # Always use timestamp to prevent race conditions with parallel runs
+          BRANCH_NAME="${BASE_BRANCH_NAME}-$(date +%s)"
+          
+          # Create and switch to new branch
+          git checkout -b "$BRANCH_NAME"
+          
+          # Commit changes
+          git add "$ASSET_PATH"
+          git commit -m "feat: add chain $CHAIN_ID to $MODULE_TYPE module v$VERSION
+          
+          - Chain ID: $CHAIN_ID
+          - Module: $MODULE_TYPE
+          - Version: $VERSION  
+          - Address: $CONTRACT_ADDRESS
+          
+          Automated update from deployment-scripts workflow."
+          
+          # Push branch
+          git push origin "$BRANCH_NAME"
+          
+          # Create PR
+          PR_TITLE="feat: Add chain $CHAIN_ID to $MODULE_TYPE module v$VERSION"
+          PR_BODY="## Module Registry Update
+
+          This PR adds a new chain deployment to the Safe Modules registry.
+
+          ### Deployment Details
+
+          | Property | Value |
+          |----------|-------|
+          | **Chain ID** | \`$CHAIN_ID\` |
+          | **Module** | $MODULE_TYPE |
+          | **Version** | $VERSION |
+          | **Address** | \`$CONTRACT_ADDRESS\` |
+
+          ### Modified Files
+
+          - \`$ASSET_PATH\`
+
+          ---
+
+          > 🤖 This PR was automatically created by the deployment-scripts workflow."
+          
+          # Create PR and capture any errors
+          if ! PR_OUTPUT=$(gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --label "automated" 2>&1); then
+            echo "::error::Failed to create PR: $PR_OUTPUT"
+            exit 1
+          fi
+          echo "::notice::Successfully created PR for chain $CHAIN_ID"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 📦 Module Registry Update Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.update.outputs.has_changes }}" == "true" ]; then
+            echo "✅ **Changes detected** - PR created to add this deployment to the registry." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.update.outputs.action }}" == "unchanged" ]; then
+            echo "ℹ️ **No changes needed** - chain already registered with same address." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Update completed** - check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
