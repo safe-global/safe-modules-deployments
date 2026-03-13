@@ -8,7 +8,6 @@ import {
   getSafeWebAuthnSignerFactoryDeployment,
   getSafeWebAuthnShareSignerDeployment,
   getDaimoP256VerifierDeployment,
-  getFCLP256VerifierDeployment,
 } from '../safe-passkey-module';
 import { getSocialRecoveryModuleDeployment } from '../safe-recovery-module';
 
@@ -129,19 +128,6 @@ describe('getDaimoP256VerifierDeployment', () => {
 
   it('returns undefined for an unknown network', () => {
     expect(getDaimoP256VerifierDeployment({ network: CHAIN_UNKNOWN })).toBeUndefined();
-  });
-});
-
-describe('getFCLP256VerifierDeployment', () => {
-  it('returns the latest released deployment by default', () => {
-    const deployment = getFCLP256VerifierDeployment();
-    expect(deployment).toBeDefined();
-    expect(deployment?.released).toBe(true);
-    expect(deployment?.version).toBe('0.2.1');
-  });
-
-  it('returns undefined for an unknown network', () => {
-    expect(getFCLP256VerifierDeployment({ network: CHAIN_UNKNOWN })).toBeUndefined();
   });
 });
 
