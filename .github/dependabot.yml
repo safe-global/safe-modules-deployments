@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    # Delay version update PRs until a package has been published for at least
+    # 7 days. Matches the minimumReleaseAge in pnpm-workspace.yaml.
+    # Security updates are exempt and always proposed immediately.
+    cooldown:
+      default-days: 7
+    groups:
+      jest:
+        patterns:
+          - 'jest'
+          - 'ts-jest'
+          - '@types/jest'
+        update-types:
+          - 'minor'
+          - 'patch'
+      typescript-toolchain:
+        patterns:
+          - 'typescript'
+          - 'typescript-eslint'
+          - '@types/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
