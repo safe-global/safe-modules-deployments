@@ -108,11 +108,7 @@ command_bump () {
 		exit 0
 	fi
 
-	newtag="v$(node -e "
-		const pkg = require('./package.json');
-		const [major, minor, patch] = pkg.version.split('.').map(Number);
-		console.log([major, minor, patch + 1].join('.'));
-	")"
+	newtag="$(npm version patch --no-git-tag-version)"
 	log "bumping to $newtag"
 
 	branch="bump/$newtag"
@@ -123,12 +119,6 @@ command_bump () {
 
 	if [[ "$dryrun" == "n" ]]; then
 		log "creating PR bumping version"
-		node -e "
-			const pkg = require('./package.json');
-			const [major, minor, patch] = pkg.version.split('.').map(Number);
-			pkg.version = [major, minor, patch + 1].join('.');
-			require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-		"
 		git checkout -b "$branch"
 		git commit -am "Bump Version to $newtag"
 		git push -u origin "$branch"
