@@ -48,7 +48,7 @@
     "rimraf": "^5.0.10",
     "ts-jest": "^29.4.9",
     "tsx": "^4.7.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^7.18.0",
     "viem": "^2.44.0"
   },
