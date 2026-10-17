@@ -18,7 +18,8 @@
     "lint:ts": "eslint --max-warnings 0 src/",
     "prepare": "pnpm run build",
     "test": "jest",
-    "update-registry": "tsx scripts/update-registry.ts"
+    "update-registry": "tsx scripts/update-registry.ts",
+    "review:verify-deployment": "tsx scripts/review/verifyDeployment.ts"
   },
   "jest": {
     "preset": "ts-jest",
