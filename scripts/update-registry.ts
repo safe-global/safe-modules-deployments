@@ -36,7 +36,7 @@ const MODULE_CONFIG: Record<
     dir: 'safe-recovery-module',
     contractName: 'SocialRecoveryModule',
     jsonFile: 'social-recovery-module.json',
-    supportedVersions: ['0.1.0'],
+    supportedVersions: ['0.2.0'],
   },
 };
 

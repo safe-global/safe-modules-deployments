@@ -1,0 +1,793 @@
+{
+  "released": true,
+  "contractName": "SocialRecoveryModule",
+  "version": "0.2.0",
+  "networkAddresses": {
+    "1": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c",
+    "10": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c",
+    "137": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c",
+    "8453": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c",
+    "42161": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c",
+    "11155111": "0x4d92D03a47468d9FC62495d85E3F205b4616FC5c"
+  },
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "_recoveryPeriod",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "ChangedThreshold",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "threshold",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "GuardianAdded",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "guardian",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "GuardianRevoked",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "guardian",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "NonceInvalidated",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "RecoveryCanceled",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "recoveryHash",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "RecoveryConfirmed",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "guardian",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "recoveryHash",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "newOwners",
+          "type": "address[]",
+          "indexed": false,
+          "internalType": "address[]"
+        },
+        {
+          "name": "newThreshold",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "RecoveryExecuted",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "recoveryHash",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "newOwners",
+          "type": "address[]",
+          "indexed": false,
+          "internalType": "address[]"
+        },
+        {
+          "name": "newThreshold",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "executableAt",
+          "type": "uint64",
+          "indexed": false,
+          "internalType": "uint64"
+        },
+        {
+          "name": "guardiansApprovalCount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "RecoveryFinalized",
+      "type": "event",
+      "inputs": [
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "recoveryHash",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "newOwners",
+          "type": "address[]",
+          "indexed": false,
+          "internalType": "address[]"
+        },
+        {
+          "name": "newThreshold",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "nonce",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "name": "NAME",
+      "type": "function",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "VERSION",
+      "type": "function",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "addGuardianWithThreshold",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_guardian",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_threshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "cancelRecovery",
+      "type": "function",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "changeThreshold",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_threshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "confirmRecovery",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_execute",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "domainSeparator",
+      "type": "function",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "encodeRecoverySignableData",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "executeRecovery",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "finalizeRecovery",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "getChainId",
+      "type": "function",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "getGuardians",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "getRecoveryApprovals",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "approvalCount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "getRecoveryHash",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "getRecoveryRequest",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "request",
+          "type": "tuple",
+          "components": [
+            {
+              "name": "guardiansApprovalCount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "newThreshold",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "nonce",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "executableAt",
+              "type": "uint64",
+              "internalType": "uint64"
+            },
+            {
+              "name": "newOwners",
+              "type": "address[]",
+              "internalType": "address[]"
+            }
+          ],
+          "internalType": "struct SocialRecoveryModule.RecoveryRequest"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "guardiansCount",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "hasGuardianApproved",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_guardian",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "isGuardian",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_guardian",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "multiConfirmRecovery",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_newOwners",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_newThreshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_signatures",
+          "type": "tuple[]",
+          "components": [
+            {
+              "name": "signer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "signature",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ],
+          "internalType": "struct SocialRecoveryModule.SignatureData[]"
+        },
+        {
+          "name": "_execute",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "nonce",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "_nonce",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "revokeGuardianWithThreshold",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_prevGuardian",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_guardian",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_threshold",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "name": "threshold",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "name": "validateGuardianSignature",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_signHash",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "_signer",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_signature",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "view"
+    }
+  ]
+}
