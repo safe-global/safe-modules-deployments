@@ -136,7 +136,7 @@ describe('getSocialRecoveryModuleDeployment', () => {
     const deployment = getSocialRecoveryModuleDeployment();
     expect(deployment).toBeDefined();
     expect(deployment?.released).toBe(true);
-    expect(deployment?.version).toBe('0.1.0');
+    expect(deployment?.version).toBe('0.2.0');
   });
 
   it('returns deployment for Optimism', () => {
