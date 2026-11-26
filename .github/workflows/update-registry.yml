@@ -15,12 +15,12 @@ on:
           - allowance
           - social-recovery
       version:
-        description: 'Module version (allowance: 0.1.1, social-recovery: 0.1.0)'
+        description: 'Module version (allowance: 0.1.1, social-recovery: 0.2.0)'
         required: true
         type: choice
         options:
-          - '0.1.0'
           - '0.1.1'
+          - '0.2.0'
       contract_address:
         description: 'Deployed contract address (0x...)'
         required: true
